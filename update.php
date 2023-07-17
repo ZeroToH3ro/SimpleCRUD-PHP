@@ -7,6 +7,14 @@ if(!isset($_GET['id'])){
     exit();
 }
 
+$errors = [
+    'name' => "",
+    'username' => "",
+    'email' => "",
+    'phone' => "",
+    'website' => "",
+];
+
 $userId = $_GET['id'];
 $user = getUserById($userId);
 
@@ -17,15 +25,18 @@ if(!$user){
 
 if($_SERVER['REQUEST_METHOD'] === 'POST'){
     try {
-        $user = updateUser($_POST, $userId);
-        uploadImage($_FILES['picture'], $user);
+        $user = array_merge($user, $_POST);
+        $isValid = validateUser($user, $errors);
+        if($isValid){
+            $user = updateUser($_POST, $userId);
+            uploadImage($_FILES['picture'], $user);
+            header('Location: index.php');
+        }
     } catch (JsonException $e) {
         echo $e;
     }
-    header('Location: index.php');
 }
-?>
 
-<?php include './_form.php' ?>
+include './_form.php';
+include './partials/footer.php';
 
-<?php include './partials/footer.php' ?>

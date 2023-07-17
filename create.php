@@ -12,38 +12,28 @@ $user = [
 ];
 
 $errors = [
-    'name' => 'The username is mandatory',
-
-
+    'id' => '',
+    'name' => '',
+    'username' => '',
+    'email' => '',
+    'phone' => '',
+    'website' => ''
 ];
 
-if($_SERVER['REQUEST_METHOD'] == 'POST'){
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     try {
-        $name = $_POST['name'];
-        $username = $_POST['username'];
-        $email = $_POST['email'];
-        $website = $_POST['website'];
-        $phone = $_POST['phone'];
+        $user = array_merge($user, $_POST);
+        $isValid = validateUser($user, $errors);
 
-
-//        $user = createUser($_POST);
+        if ($isValid) {
+            $user = createUser($_POST);
+            uploadImage($_FILES['picture'], $user);
+            header('Location: index.php');
+        }
     } catch (JsonException $e) {
         var_dump($e);
     }
-
-    if(isset($_FILES['picture'])){
-        try {
-            uploadImage($_FILES['picture'], $user);
-        } catch (JsonException $e) {
-            var_dump($e);
-        }
-    }
-    header('Location: index.php');
-
 }
+include './_form.php';
+include './partials/footer.php';
 
-?>
-
-<?php include './partials/_form.php' ?>
-
-<?php include './partials/footer.php' ?>
